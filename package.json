@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/haysberg/kayayluh-twitch/issues"
   },
-  "homepage": "https://github.com/haysberg/kayayluh-twitch#readme"
+  "homepage": "https://github.com/haysberg/kayayluh-twitch#readme",
+  "dependencies": {
+    "sqlite3": "^5.0.8"
+  }
 }

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/haysberg/kayayluh-twitch#readme",
   "dependencies": {
-    "sqlite3": "^5.0.8"
+    "sqlite3": "^5.0.8",
+    "tmi.js": "^1.8.5"
   }
 }

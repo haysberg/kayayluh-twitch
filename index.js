@@ -15,9 +15,6 @@ logger.add(new winston.transports.Console({
 	format: winston.format.simple(),
 }));
 
-
-const clientId = 'gn23q4uf789f2f7l7mke96wopjmu9i';
-const clientSecret = 'eeh4wp8cq30d0coxh0kbwswmni0dip';
 const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
 
 const chatClient = new ChatClient({ authProvider, channels: ['kaylascreambot'] });

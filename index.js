@@ -1,6 +1,7 @@
 import * as winston from 'winston';
 import { ClientCredentialsAuthProvider } from '@twurple/auth';
 import { ChatClient } from '@twurple/chat';
+import 'dotenv/config'
 
 // We create the logger
 const logger = winston.createLogger({
@@ -15,7 +16,7 @@ logger.add(new winston.transports.Console({
 	format: winston.format.simple(),
 }));
 
-const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
+const authProvider = new ClientCredentialsAuthProvider(process.env.CLIENT_ID, process.env.CLIENT_SECRET);
 
 const chatClient = new ChatClient({ authProvider, channels: ['kaylascreambot'] });
 await chatClient.connect();
@@ -33,6 +34,8 @@ const followAgeListener = chatClient.onMessage(async (channel, user, message, ms
 		}
 	}
 });
+
+logger.info('🚀 kaylascream is online !');
 
 // later, when you don't need this command anymore:
 chatClient.removeListener(followAgeListener);

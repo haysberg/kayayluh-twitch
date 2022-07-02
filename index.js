@@ -1,19 +1,19 @@
-// const winston = require('winston');
+import * as winston from 'winston';
 import { ClientCredentialsAuthProvider } from '@twurple/auth';
 import { ChatClient } from '@twurple/chat';
 
 // We create the logger
-// const logger = winston.createLogger({
-// 	level: 'info',
-// 	format: winston.format.json(),
-// 	transports: [
-// 		new winston.transports.File({ filename: 'kaylascream.log' }),
-// 	],
-// });
+const logger = winston.createLogger({
+	level: 'info',
+	format: winston.format.json(),
+	transports: [
+		new winston.transports.File({ filename: 'kaylascream.log' }),
+	],
+});
 
-// logger.add(new winston.transports.Console({
-// 	format: winston.format.simple(),
-// }));
+logger.add(new winston.transports.Console({
+	format: winston.format.simple(),
+}));
 
 
 const clientId = 'gn23q4uf789f2f7l7mke96wopjmu9i';

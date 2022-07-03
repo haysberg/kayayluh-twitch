@@ -1,0 +1,26 @@
+{
+  "name": "kayayluh-twitch",
+  "version": "1.0.0",
+  "description": "Kayayluh's scream count bot, Twitch™ GOTY™ & Knuckles™ Edition !",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haysberg/kayayluh-twitch.git"
+  },
+  "author": "Téo \"Le Dozo\" Haÿs",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/haysberg/kayayluh-twitch/issues"
+  },
+  "homepage": "https://github.com/haysberg/kayayluh-twitch#readme",
+  "dependencies": {
+    "@twurple/auth": "^5.1.6",
+    "@twurple/auth-tmi": "^5.1.6",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "mongodb": "^4.7.0"
+  }
+}

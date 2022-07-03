@@ -1,87 +1,130 @@
-const winston = require('winston');
-let http = require('http');
+const tmi = require('@twurple/auth-tmi');
+const { StaticAuthProvider } = require('@twurple/auth');
+require('dotenv').config()
+const MongoClient = require('mongodb').MongoClient;
+const ServerApiVersion = require('mongodb').ServerApiVersion;
 
-const logger = winston.createLogger({
-	level: 'info',
-	format: winston.format.json(),
-	transports: [
-		new winston.transports.File({ filename: 'kaylascream.log' }),
-	],
-});
+//Initializing variables
+var screamcount = 0.0
+var totalscreams = 0.0
+const PREFIX = "*";
 
-logger.add(new winston.transports.Console({
-	format: winston.format.simple(),
-}));
+//We create a single connection to the Mongo Database to avoid resource exhaustion
+const uri = process.env.MONGO_URI
+var mongo = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-client.once('ready', () => {
-	logger.info('🚀 kaylascream is online !');
-	client.user.setActivity('SCREAM COUNT', { type: 'COMPETING' });
-});
+///////////////////////////////////////////
+//EXPRESS BLOCK TO DISPLAY THE ACTUAL COUNT
+///////////////////////////////////////////
+const express = require('express');
+const path = require('path');
+const app = express();
+const port = process.env.PORT || 8080;
 
-screamcount = 0
-
-const whitelist = ["Couaque#3615", "kayayluh#7905", "Meep#5585"]
-
-client.on('interactionCreate', async interaction => {
-	if (whitelist.includes(interaction.user.tag)) {
-		if (!interaction.isCommand()) return;
-		const { commandName } = interaction;
-		if (commandName === 'ping') {
-			logger.info('Asked for a ping command')
-			await interaction.reply('Pong!');
-		} else if (commandName === 'adds') {
-			screamcount = screamcount + 1
-			logger.info('Current scream count : ' + screamcount)
-			await interaction.reply('Scream added. Current scream count : ' + screamcount)
-		} else if (commandName == 'resets') {
-			logger.info('Asked for the resets command')
-			screamcount = 0
-			await interaction.reply('Scream added. Current scream count : ' + screamcount)
-		} else if (commandName === 'sets') {
-			logger.info('Asked for the sets command')
-			screamcount = interaction.options.getInteger("value")
-			await interaction.reply('Scream counter set ! Current scream count : ' + screamcount)
-		}
-	}else{
-		interaction.reply(`Sorry, you're not one of my masters :/`)
-	}
-
-});
-
-client.login(token);
-
-// EXPRESS CONFIG
-const express = require('express')
-const app = express()
-const port = 8080
+//Necessary to get the font files
 app.use('/static', express.static('public'))
 
-app.get('/', (req, res) => {
-	res.send(`<!DOCTYPE html>
-	<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta http-equiv="Refresh" content="10">
-		<style>
-		@font-face {
-			font-family: 'Kon Tiki Aloha JF';
-			font-style: normal;
-			font-weight: 700;
-			font-display: swap;
-			src: url(https://kscreams.haysberg.io/static/kontiki.woff2) format('woff2');
-			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-		  }
-		</style>
-		<title>Kayla's scream counter</title>
-	</head>
-	<body style="background-color:transparent">
-		<p style="font-size:300px; font-family: 'Kon Tiki Aloha JF', sans-serif;">${screamcount}</p>
-	</body>
-	</html>`)
+//The actual index.html
+app.get('/', function(req, res) {
+  res.sendFile(path.join(__dirname, '/index.html'));
+});
+
+//The actual index.html
+app.get('/countjson', function(req, res) {
+	res.json({ count: screamcount })
+  });
+
+//We launch the Express server
+app.listen(port);
+
+//SIGTERM Handler just to make sure we save the values when the server reboots
+process.on('SIGTERM', () => {
+	debug('SIGTERM signal received: closing HTTP server')
+	server.close(() => {
+		mongo.db("kscreams").collection("alltimecount").updateMany({}, {$set: { count: totalscreams }})
+		debug('HTTP server closed')
+	})
 })
 
-app.listen(port, () => {
-	console.log(`KAYLA SCREAM COUNTER LISTENING ON PORT ${port}`)
-})
+//Lil log line
+console.log('Server started at http://localhost:' + port);
+
+/////////////////////////////////////
+//Connection to the Twitch IRC Server
+/////////////////////////////////////
+const authProvider = new StaticAuthProvider(process.env.CLIENT_ID, process.env.ACCESS_TOKEN);
+const client = new tmi.Client({
+	options: { debug: true },
+	connection: {
+		reconnect: true,
+		secure: true
+	},
+	authProvider: authProvider,
+	channels: ['kaylascreambot', 'kayayluh']
+});
+
+client.connect().catch(console.error);
+
+//Setting up the recurrent messages about the current scream count
+client.on('connected', (address, port) => {
+	mongo.connect(err => {
+		var collection = mongo.db("kscreams").collection("alltimecount");
+		// perform actions on the collection object
+		collection.findOne().then(function(res){
+			totalscreams = res.count;
+		})		
+	});
+
+	client.say('kaylascreambot', `Kayla has screamed ${screamcount} times today and ${totalscreams} times overall.`);
+
+    setInterval(() => {
+		client.say('kaylascreambot', `Kayla has screamed ${totalscreams} times overall.`);
+		client.say('kaylascreambot', `Kayla has screamed ${screamcount} times today.`);
+		mongo.db("kscreams").collection("alltimecount").updateMany({}, {$set: { count: totalscreams }});
+    }, 600000);	
+});
+
+client.on('message', (channel, tags, message, self) => {
+	let [command, ...args] = message.toLowerCase().slice(PREFIX.length).split(/ +/g);
+
+	if (self) return;
+
+	if (command === 'hello') {
+		client.say(channel, `@${tags.username}, heya!`);
+	}
+
+	if (command === 'help') {
+		client.say(channel, `@${tags.username} List of commands : addscream, addhalfscream, addquarterscream, save, info, help`);
+	}
+
+	if (command === 'info') {
+		client.say(channel, `@${tags.username} Kayla has screamed ${screamcount} times today and ${totalscreams} times overall.`);
+	}
+
+	if ("moderator" in tags.badges || "broadcaster" in tags.badges || tags.username == "teoledozo" ){
+		if (command === 'addscream') {
+			screamcount = screamcount + 1
+			totalscreams = totalscreams + 1
+			client.say(channel, `Scream added. Current scream count : ${screamcount}`);
+		}
+
+		if (command === 'addhalfscream') {
+			screamcount = screamcount + 0.5
+			totalscreams = totalscreams + 0.5
+			client.say(channel, `Scream added. Current scream count : ${screamcount}`);
+		}
+
+		if (command === 'addquarterscream') {
+			screamcount = screamcount + 0.25
+			totalscreams = totalscreams + 0.25
+			client.say(channel, `Scream added. Current scream count : ${screamcount}`);
+		}
+
+		if (command === 'save') {
+			mongo.db("kscreams").collection("alltimecount").updateMany({}, {$set: { count: totalscreams }})
+			client.say(channel, `@${tags.username} Saved total scream count : ${totalscreams}`);
+		}
+	}
+});
+
+console.log('🔫🥔 kaylascream is online !');

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!-- saved from url=(0029)https://kscreams.haysberg.io/ -->
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<style>
+			@font-face {
+				font-family: 'Kon Tiki Aloha JF';
+				font-style: normal;
+				font-weight: 700;
+				font-display: swap;
+				src: url(http://localhost:8080/static/kontiki.woff2) format('woff2');
+				unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+			}
+		</style>
+		<title>Kayla's scream counter</title>
+	</head>
+
+	<body style="background-color:transparent">
+		<p id="count" style="font-size:300px; font-family: 'Kon Tiki Aloha JF', sans-serif;">0</p>
+	</body>
+
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script>
+		var url_object = new URL(window.location.href)
+		var api_url = `${url_object.protocol}//${url_object.hostname}:${url_object.port}/countjson` 
+		setInterval(() => {
+		var res = axios.get(api_url,
+		{
+			"collection":"currentcount",
+			"database":"kscreams",
+			"dataSource":"TeoLeDozo",
+			"projection": {"_id": 0, "count":1 }
+		},{
+			headers: {
+				"api-key":"hxYbxGIrcUcXlEldGPLL9EJzG0JNfXLzp3g3hqnEzvFdhXNn6kO3nzs3Zf3IlyHO",
+				"Access-Control-Request-Headers":"*",
+				"Accept":"application/json",
+				"Content-Type":"application/json"
+			}
+		})
+		.then(function (response) {
+			console.log(response)
+			document.getElementById("count").innerText = response.data.count;
+		})
+		.catch(function (error) {
+			// handle error
+			console.log(error);
+		})
+		.then(function () {
+			// always executed
+		});
+    	}, 1000);
+
+		
+		
+	</script>
+</html>

@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  kayayluh-screams:
+    pull_policy: always
+    image: ghcr.io/haysberg/kayayluh-twitch:main
+    container_name: kaylascreambot
+    restart: always
+    ports:
+      - 0.0.0.0:44333:8080 #To listen on port 443, change it to 443:5000
+    environment:
+      - CLIENT_ID="CLIENT_ID"
+      - CLIENT_SECRET="CLIENT_SECRET"

@@ -74,7 +74,7 @@ const client = new tmi.Client({
 	},
 	identity: {
 		username: 'KaylaScreamBot',
-		password: `oauth:${ACCES}`
+		password: `oauth:${ACCESS_TOKEN}`
 	},
 	channels: ['kaylascreambot', 'kayayluh']
 });

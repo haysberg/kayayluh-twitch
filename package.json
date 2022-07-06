@@ -21,11 +21,12 @@
     "@twurple/auth-tmi": "^5.1.6",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "mongodb": "^4.7.0",
     "express-session": "^1.15.2",
     "handlebars": "^4.0.6",
+    "mongodb": "^4.7.0",
     "passport": "^0.3.2",
     "passport-oauth": "^1.0.0",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "tmi.js": "^1.8.5"
   }
 }

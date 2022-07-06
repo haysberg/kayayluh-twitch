@@ -1,4 +1,4 @@
-const tmi = require('@twurple/auth-tmi');
+const tmi = require('tmi.js');
 const { StaticAuthProvider, RefreshingAuthProvider } = require('@twurple/auth');
 require('dotenv').config()
 const MongoClient = require('mongodb').MongoClient;
@@ -16,10 +16,13 @@ var totalscreams = 0.0
 const PREFIX = "*";
 
 // Define our constants, you will change these with your own
-const TWITCH_CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_ID = process.env.CLIENT_ID;
 const TWITCH_SECRET    = process.env.CLIENT_SECRET;
 const SESSION_SECRET   = process.env.SESSION_SECRET;
 const CALLBACK_URL     = "http://localhost:8080/followup";
+
+console.log(`CLIENT_ID : ${CLIENT_ID}`)
+console.log(`TWITCH_SECRET : ${TWITCH_SECRET}`)
 
 //We create a single connection to the Mongo Database to avoid resource exhaustion
 const uri = process.env.MONGO_URI
@@ -49,92 +52,6 @@ app.get('/countjson', function(req, res) {
 	res.json({ count: screamcount })
 });
 
-//Twitch OAuth Callback method
-app.get('/auth/twitch/callback', passport.authenticate('twitch', { successRedirect: '/', failureRedirect: '/' }));
-
-// Override passport profile function to get user profile from Twitch API
-OAuth2Strategy.prototype.userProfile = function(accessToken, done) {
-	var options = {
-	  url: 'https://api.twitch.tv/helix/users',
-	  method: 'GET',
-	  headers: {
-		'Client-ID': TWITCH_CLIENT_ID,
-		'Accept': 'application/vnd.twitchtv.v5+json',
-		'Authorization': 'Bearer ' + accessToken
-	  }
-	};
-  
-	request(options, function (error, response, body) {
-	  if (response && response.statusCode == 200) {
-		done(null, JSON.parse(body));
-	  } else {
-		done(JSON.parse(body));
-	  }
-	});
-  }
-  
-  passport.serializeUser(function(user, done) {
-	  done(null, user);
-  });
-  
-  passport.deserializeUser(function(user, done) {
-	  done(null, user);
-  });
-  
-  passport.use('twitch', new OAuth2Strategy({
-	  authorizationURL: 'https://id.twitch.tv/oauth2/authorize',
-	  tokenURL: 'https://id.twitch.tv/oauth2/token',
-	  clientID: TWITCH_CLIENT_ID,
-	  clientSecret: TWITCH_SECRET,
-	  callbackURL: CALLBACK_URL,
-	  state: true
-	},
-
-	function(accessToken, refreshToken, profile, done) {
-		console.log(accessToken, refreshToken, profile)
-		profile.accessToken = accessToken;
-	  	profile.refreshToken = refreshToken;
-	
-		//Securely store user profile in your DB
-		mongo.db("kscreams").collection("alltimecount").findAndModify({
-			query: { _id: "some potentially existing id" },
-			update: {
-			$setOnInsert: { foo: "bar" }
-			},
-			new: true,   // return new doc if one is upserted
-			upsert: true // insert the document if it does not exist
-		})
-	
-		done(null, profile);
-	}
-  ));
-  
-  // Set route to start OAuth link, this is where you define scopes to request
-  app.get('/auth/twitch', passport.authenticate('twitch', { scope: 'user_read' }));
-  
-  // Set route for OAuth redirect
-  app.get('/auth/twitch/callback', passport.authenticate('twitch', { successRedirect: '/followup', failureRedirect: '/followup' }));
-  
-  // Define a simple template to safely generate HTML with values from user's profile
-  var template = handlebars.compile(`
-  <html><head><title>Twitch Auth Sample</title></head>
-  <table>
-	  <tr><th>Access Token</th><td>{{accessToken}}</td></tr>
-	  <tr><th>Refresh Token</th><td>{{refreshToken}}</td></tr>
-	  <tr><th>Display Name</th><td>{{display_name}}</td></tr>
-	  <tr><th>Bio</th><td>{{bio}}</td></tr>
-	  <tr><th>Image</th><td>{{logo}}</td></tr>
-  </table></html>`);
-  
-  // If user has an authenticated session, display it, otherwise display link to authenticate
-  app.get('/followup', function (req, res) {
-	if(req.session && req.session.passport && req.session.passport.user) {
-	  res.send(template(req.session.passport.user));
-	} else {
-	  res.send('<html><head><title>Twitch Auth Sample</title></head><a href="/auth/twitch"><img src="http://ttv-api.s3.amazonaws.com/assets/connect_dark.png"></a></html>');
-	}
-});
-
 //We launch the Express server
 app.listen(port);
 
@@ -158,15 +75,16 @@ mongo.connect(err => {
 		totalscreams = res.count;
 	})		
 });
-const authProvider = new StaticAuthProvider(process.env.CLIENT_ID, process.env.CLIENT_SECRET);
 
 const client = new tmi.Client({
-	options: { debug: true },
-	connection: {
-		reconnect: true,
-		secure: true
+	options: { 
+		debug: true,
+		clientId: CLIENT_ID
 	},
-	authProvider: authProvider,
+	identity: {
+		username: 'KaylaScreamBot',
+		password: 'oauth:desz0rgaoikjuxytqa5s5dev1d4kbe'
+	},
 	channels: ['kaylascreambot', 'kayayluh']
 });
 

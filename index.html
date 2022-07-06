@@ -27,16 +27,8 @@
 		var url_object = new URL(window.location.href)
 		var api_url = `${url_object.protocol}//${url_object.hostname}:${url_object.port}/countjson` 
 		setInterval(() => {
-		var res = axios.get(api_url,
-		{
-			"collection":"currentcount",
-			"database":"kscreams",
-			"dataSource":"TeoLeDozo",
-			"projection": {"_id": 0, "count":1 }
-		},{
+		var res = axios.get(api_url,{
 			headers: {
-				"api-key":"hxYbxGIrcUcXlEldGPLL9EJzG0JNfXLzp3g3hqnEzvFdhXNn6kO3nzs3Zf3IlyHO",
-				"Access-Control-Request-Headers":"*",
 				"Accept":"application/json",
 				"Content-Type":"application/json"
 			}

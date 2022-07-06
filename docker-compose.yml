@@ -9,5 +9,8 @@ services:
     ports:
       - 0.0.0.0:44333:8080 #To listen on port 443, change it to 443:5000
     environment:
+      - ACCESS_TOKEN="ACCESS_TOKEN"
+      - REFRESH_TOKEN="REFRESH_TOKEN"
       - CLIENT_ID="CLIENT_ID"
       - CLIENT_SECRET="CLIENT_SECRET"
+      - MONGO_URI="MONGO_URI"

@@ -2,8 +2,7 @@ version: '3.3'
 
 services:
   kayayluh-screams:
-    pull_policy: always
-    image: ghcr.io/haysberg/kayayluh-twitch:main
+    build: .
     container_name: kaylascreambot
     restart: always
     ports:

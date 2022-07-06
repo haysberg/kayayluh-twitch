@@ -1,14 +1,7 @@
 const tmi = require('tmi.js');
-const { StaticAuthProvider, RefreshingAuthProvider } = require('@twurple/auth');
 require('dotenv').config()
 const MongoClient = require('mongodb').MongoClient;
 const ServerApiVersion = require('mongodb').ServerApiVersion;
-
-var session        = require('express-session');
-var passport       = require('passport');
-var OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
-var request        = require('request');
-var handlebars     = require('handlebars');
 
 //Initializing variables
 var screamcount = 0.0
@@ -18,15 +11,16 @@ const PREFIX = "*";
 // Define our constants, you will change these with your own
 const CLIENT_ID = process.env.CLIENT_ID;
 const TWITCH_SECRET    = process.env.CLIENT_SECRET;
-const SESSION_SECRET   = process.env.SESSION_SECRET;
-const CALLBACK_URL     = "http://localhost:8080/followup";
+const ACCESS_TOKEN   = process.env.ACCESS_TOKEN;
+const MONGO_URI = process.env.MONGO_URI;
 
 console.log(`CLIENT_ID : ${CLIENT_ID}`)
 console.log(`TWITCH_SECRET : ${TWITCH_SECRET}`)
+console.log(`ACCESS_TOKEN : ${ACCESS_TOKEN}`)
+console.log(`MONGO_URI : ${MONGO_URI}`)
 
 //We create a single connection to the Mongo Database to avoid resource exhaustion
-const uri = process.env.MONGO_URI
-var mongo = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+var mongo = new MongoClient(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 ///////////////////////////////////////////
 //EXPRESS BLOCK TO DISPLAY THE ACTUAL COUNT
@@ -34,9 +28,6 @@ var mongo = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: tr
 const express = require('express');
 const path = require('path');
 const app = express();
-app.use(session({secret: SESSION_SECRET, resave: false, saveUninitialized: false}));
-app.use(passport.initialize());
-app.use(passport.session());
 const port = process.env.PORT || 8080;
 
 //Necessary to get the font files
@@ -83,7 +74,7 @@ const client = new tmi.Client({
 	},
 	identity: {
 		username: 'KaylaScreamBot',
-		password: 'oauth:desz0rgaoikjuxytqa5s5dev1d4kbe'
+		password: `oauth:${ACCES}`
 	},
 	channels: ['kaylascreambot', 'kayayluh']
 });

@@ -98,7 +98,7 @@ setInterval(() => {
 
 client.on('message', (channel, tags, message, self) => {
 	let [command, ...args] = message.toLowerCase().slice(PREFIX.length).split(/ +/g);
-	let badges = badges = tags.badges || {};
+	let badges = tags.badges || {};
 
 	if (self) return;
 

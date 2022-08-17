@@ -113,28 +113,30 @@ client.on('message', (channel, tags, message, self) => {
 		client.say(channel, `@${tags.username} Kayla has screamed ${screamcount} times today and ${totalscreams} times overall.`);
 	}
 
-	if ("moderator" in tags.badges || "broadcaster" in tags.badges || tags.username == "teoledozo" ){
-		if (command === 'addscream') {
-			screamcount = screamcount + 1
-			totalscreams = totalscreams + 1
-			client.say(channel, `Scream added. Current scream count : ${screamcount}`);
-		}
+	if (typeof tags.badges !== 'undefined') {
+		if ("moderator" in tags.badges || "broadcaster" in tags.badges || tags.username == "teoledozo" ){
+			if (command === 'addscream') {
+				screamcount = screamcount + 1
+				totalscreams = totalscreams + 1
+				client.say(channel, `Scream added. Current scream count : ${screamcount}`);
+			}
 
-		if (command === 'addhalfscream') {
-			screamcount = screamcount + 0.5
-			totalscreams = totalscreams + 0.5
-			client.say(channel, `Scream added. Current scream count : ${screamcount}`);
-		}
+			if (command === 'addhalfscream') {
+				screamcount = screamcount + 0.5
+				totalscreams = totalscreams + 0.5
+				client.say(channel, `Scream added. Current scream count : ${screamcount}`);
+			}
 
-		if (command === 'addquarterscream') {
-			screamcount = screamcount + 0.25
-			totalscreams = totalscreams + 0.25
-			client.say(channel, `Scream added. Current scream count : ${screamcount}`);
-		}
+			if (command === 'addquarterscream') {
+				screamcount = screamcount + 0.25
+				totalscreams = totalscreams + 0.25
+				client.say(channel, `Scream added. Current scream count : ${screamcount}`);
+			}
 
-		if (command === 'save') {
-			mongo.db("kscreams").collection("alltimecount").updateMany({}, {$set: { count: totalscreams }})
-			client.say(channel, `@${tags.username} Saved total scream count : ${totalscreams}`);
+			if (command === 'save') {
+				mongo.db("kscreams").collection("alltimecount").updateMany({}, {$set: { count: totalscreams }})
+				client.say(channel, `@${tags.username} Saved total scream count : ${totalscreams}`);
+			}
 		}
 	}
 });

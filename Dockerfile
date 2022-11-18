@@ -1,7 +1,7 @@
 FROM node:latest
 
-RUN apk update
-RUN apk upgrade
+RUN apt update
+RUN apt upgrade
 
 # Create app directory
 WORKDIR /usr/src/app

@@ -107,7 +107,7 @@ client.on('message', (channel, tags, message, self) => {
 	}
 
 	if (command === 'help') {
-		client.say(channel, `@${tags.username} List of commands : addscream, addhalfscream, addquarterscream, save, info, help`);
+		client.say(channel, `@${tags.username} List of commands : resetcount, addscream, addhalfscream, addquarterscream, save, info, help`);
 	}
 
 	if (command === 'info') {
@@ -115,6 +115,11 @@ client.on('message', (channel, tags, message, self) => {
 	}
 
 	if (badges.moderator || badges.broadcaster || tags.username == "teoledozo" ){
+		if (command == "resetcount") {
+			screamcount = 0
+			client.say(channel, `Scream count reset.`);
+		}
+
 		if (command === 'addscream') {
 			screamcount = screamcount + 1
 			totalscreams = totalscreams + 1

@@ -8,6 +8,8 @@ name: Docker publish
 on:
   push:
     branches: ['main', 'develop']
+  schedule:
+    - cron: '1 * * * 1'
 
 env:
   REGISTRY: ghcr.io

@@ -20,7 +20,8 @@ jobs:
       packages: write
 
     steps:
-      - name: NPM Install & Build
-        uses: actions/setup-node@v3
-        with:
-          node-version: lts/*
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: lts/*
+    - run: npm ci

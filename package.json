@@ -17,8 +17,8 @@
   },
   "homepage": "https://github.com/haysberg/kayayluh-twitch#readme",
   "dependencies": {
+    "@twurple/auth-tmi": "^6.0.0",
     "@twurple/auth": "^6.0.0",
-    "@twurple/auth-tmi": "^5.1.6",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "express-session": "^1.15.2",

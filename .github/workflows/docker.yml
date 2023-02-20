@@ -7,9 +7,7 @@ name: Docker publish
 
 on:
   push:
-    branches: ['main', 'develop']
-  schedule:
-    - cron: '0 0 * * 0'
+    branches: ['main', 'develop', 'origin/renovate/*']
 
 env:
   REGISTRY: ghcr.io
